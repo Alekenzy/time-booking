@@ -4,17 +4,17 @@
     fluid
   >
     <v-row align="center" justify="center">
-      <v-col cols="12" sm="8" md="3">
+      <v-col cols="12" md="8" lg="6">
         <v-card class="elevation-1 pa-8" outlined>
           <v-card-title>
             <v-container class="text-center pt-4">
-              <v-avatar id="avatar" color="primary" :size="120">
-                <v-icon :size="100" dark>
+              <v-avatar color="primary" size="120">
+                <v-icon size="100" dark>
                   mdi-account
                 </v-icon>
               </v-avatar>
-              <div class="display-1 grey--text">
-                Login
+              <div class="display-1 grey--text pb-8">
+                Welcome to Time-Booking Service!
               </div>
             </v-container>
           </v-card-title>
@@ -169,23 +169,3 @@ export default {
   }
 };
 </script>
-
-<style lang="scss" scoped>
-#avatar {
-  position: absolute;
-  margin: 0 auto;
-  left: 0;
-  right: 0;
-  top: -70px;
-  width: 95px;
-  height: 95px;
-  border-radius: 50%;
-  z-index: 9;
-  padding: 15px;
-  box-shadow: 0 2px 2px rgba(0, 0, 0, 0.1);
-}
-
-#login-btn {
-  font-size: 1.2em;
-}
-</style>

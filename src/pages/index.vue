@@ -1,147 +1,165 @@
 <template>
-  <div>
-    <v-card>
-      <v-layout>
-        <v-app-bar
-          color="primary"
-          prominent
-        >
-          <v-app-bar-nav-icon variant="text" @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
+  <v-layout>
+    <v-navigation-drawer permanent floating class="position-fixed" width="332">
+      <v-list>
+        <v-list-item
+          title="Booking"
+          subtitle="f*ck you"
+          class="pt-2 pb-4"
+          prepend-icon="mdi-book-open-outline"
+        />
+        <v-list-item class="d-flex justify-center items-center py-4">
+          <v-btn size="large" rounded="lg" color="primary" variant="outlined"
+            >Создать
+          </v-btn>
+        </v-list-item>
+        <v-list-item class="px-0 pt-0 pb-4 d-flex justify-center items-center">
+          <v-date-picker
+            max-width="300"
+            hide-header
+            show-adjacent-months
+            weeks-in-month="dynamic"
+          ></v-date-picker>
+        </v-list-item>
+        <v-list-item
+          v-for="(room, index) in rooms"
+          :key="index"
+          :value="room.value"
+          :title="room.title"
+          :subtitle="`${room.capacity} / ${room.floor}`"
+          @click="selectRoom(room.value)"
+          :active="selectedRoom === room.value"
+        ></v-list-item>
+      </v-list>
 
-          <v-toolbar-title>My files</v-toolbar-title>
-
-          <v-spacer></v-spacer>
-
-          <v-switch
-            v-model="themeValue"
-            :label="`Theme: ${themeValue}`"
-            false-value="dark"
-            true-value="light"
-            hide-details
-            class="px-2"
-          />
-
-          <v-btn icon="mdi-dots-vertical" variant="text"></v-btn>
-        </v-app-bar>
-
-        <v-navigation-drawer
-          v-model="drawer"
-        >
-          <v-list
-            :items="items"
-          ></v-list>
-        </v-navigation-drawer>
-
-        <v-main>
-          <v-sheet
-            class="d-flex"
-            height="54"
-            tile
+      <template #append>
+        <v-list>
+          <!--<v-list-item>
+            <v-switch
+              v-model="themeValue"
+              :label="`Theme: ${themeValue}`"
+              false-value="dark"
+              true-value="light"
+              hide-details
+            />
+          </v-list-item>-->
+          <v-list-item
+            v-for="(item, i) in [
+              {
+                title: 'Logout',
+                icon: 'mdi-logout',
+                action: logout
+              }
+            ]"
+            :key="i"
+            :value="item"
+            color="primary"
+            @click="item.action"
+            :append-icon="item.icon"
+            :title="item.title"
           >
-            <v-select
-              v-model="type"
-              :items="types"
-              class="ma-2"
-              label="View Mode"
-              variant="outlined"
-              dense
-              hide-details
-            ></v-select>
-            <v-select
-              v-model="weekday"
-              :items="weekdays"
-              class="ma-2"
-              label="weekdays"
-              variant="outlined"
-              dense
-              hide-details
-            ></v-select>
-          </v-sheet>
-          <v-sheet>
-            <v-calendar
-              ref="calendar"
-              v-model="value"
-              :events="events"
-              :view-mode="type"
-              :weekdays="weekday"
-            ></v-calendar>
-          </v-sheet>
-        </v-main>
-      </v-layout>
-    </v-card>
-  </div>
+          </v-list-item>
+        </v-list>
+      </template>
+    </v-navigation-drawer>
+
+    <v-main>
+      <v-sheet class="pa-2">
+        <v-calendar
+          v-model="value"
+          :events="events"
+          view-mode="week"
+          :interval-start="7"
+          :intervals="14"
+        ></v-calendar>
+      </v-sheet>
+    </v-main>
+  </v-layout>
 </template>
 
 <script lang="ts" setup>
-import {useDate, useTheme} from 'vuetify'
-import {onMounted} from "vue";
+import { useDate /*useTheme*/ } from 'vuetify'
+import { onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 
-const theme = useTheme()
+// const theme = useTheme()
+const router = useRouter()
 
-const type = ref<"month" | "week" | "day">('month')
-const types = ref<("month" | "week" | "day")[]>(['month', 'week', 'day'])
-const weekday = ref<number[]>([0, 1, 2, 3, 4, 5, 6])
-const weekdays = ref<{ title: string, value: number[] }[]>([
-  {title: 'Sun - Sat', value: [0, 1, 2, 3, 4, 5, 6]},
-  {title: 'Mon - Sun', value: [1, 2, 3, 4, 5, 6, 0]},
-  {title: 'Mon - Fri', value: [1, 2, 3, 4, 5]},
-  {title: 'Mon, Wed, Fri', value: [1, 3, 5]},
+const value = ref<Array<Date>>([new Date()])
+const events = ref<
+  {
+    title: string
+    start: Date
+    end: Date
+    color: string
+    allDay: boolean
+  }[]
+>([])
+const colors = ref<string[]>([
+  'blue',
+  'indigo',
+  'deep-purple',
+  'cyan',
+  'green',
+  'orange',
+  'grey darken-1'
 ])
-const value = ref<Date[]>([new Date()])
-const events = ref<{
-  title: string
-  start: Date
-  end: Date
-  color: string
-  allDay: boolean
-}[]>([])
-const colors = ref<string[]>(['blue', 'indigo', 'deep-purple', 'cyan', 'green', 'orange', 'grey darken-1'])
-const titles = ref<string[]>(['Meeting', 'Holiday', 'PTO', 'Travel', 'Event', 'Birthday', 'Conference', 'Party'])
-
-// navigation-drawer dynamic values
-const drawer = ref(true)
-const group = ref(null)
-const items = ref<{
-  title: string,
-  value: string,
-}[]>([
-  {
-    title: 'Foo',
-    value: 'foo',
-  },
-  {
-    title: 'Bar',
-    value: 'bar',
-  },
-  {
-    title: 'Fizz',
-    value: 'fizz',
-  },
-  {
-    title: 'Buzz',
-    value: 'buzz',
-  },
+const titles = ref<string[]>([
+  'Meeting',
+  'Holiday',
+  'PTO',
+  'Travel',
+  'Event',
+  'Birthday',
+  'Conference',
+  'Party'
 ])
 
-const themeValue = computed({
-  get: () => {
-    return theme.global.name.value
+const rooms = ref<
+  {
+    title: string
+    value: string
+    appendIcon: string
+    capacity: number
+    floor: number
+  }[]
+>([
+  {
+    title: 'Room 1',
+    value: 'room1',
+    appendIcon: '',
+    capacity: 10,
+    floor: 2
   },
-  set: (newValue) => {
-    theme.global.name.value = newValue
+  {
+    title: 'Room 2',
+    value: 'room2',
+    appendIcon: '',
+    capacity: 12,
+    floor: 2
+  },
+  {
+    title: 'Room 3',
+    value: 'room3',
+    appendIcon: '',
+    capacity: 17,
+    floor: 1
+  },
+  {
+    title: 'Room 4',
+    value: 'room4',
+    appendIcon: '',
+    capacity: 6,
+    floor: 1
   }
-  })
-
-watch(() => group.value, () => {
-  console.log(group.value)
-  drawer.value = false
-})
+])
+const selectedRoom = ref<string>('')
 
 function rnd(a: number, b: number) {
   return Math.floor((b - a + 1) * Math.random()) + a
 }
 
-function getEvents(args: { start: Date, end: Date }) {
+function getEvents(args: { start: Date; end: Date }) {
   const getEventsArr = []
 
   const min = args.start
@@ -161,7 +179,7 @@ function getEvents(args: { start: Date, end: Date }) {
       start: first,
       end: second,
       color: colors.value[rnd(0, colors.value.length - 1)],
-      allDay: !allDay,
+      allDay: !allDay
     })
   }
 
@@ -169,11 +187,25 @@ function getEvents(args: { start: Date, end: Date }) {
   console.log(events.value)
 }
 
-onMounted(() => {
+function logout() {
+  router.push('/login')
+}
+
+function loadEvents() {
   const adapter = useDate()
-  getEvents({
+  const eventsRange = {
     start: adapter.startOfDay(adapter.startOfMonth(new Date())) as Date,
     end: adapter.endOfDay(adapter.endOfMonth(new Date())) as Date
-  })
-})
+  }
+  console.log(eventsRange)
+  getEvents(eventsRange)
+}
+
+function selectRoom(roomValue: string) {
+  console.log(roomValue)
+  selectedRoom.value = roomValue
+  loadEvents()
+}
+
+onMounted(loadEvents)
 </script>

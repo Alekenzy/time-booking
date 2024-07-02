@@ -1,21 +1,14 @@
 <template>
-  <v-container
-    class="fill-height"
-    fluid
-  >
+  <v-container class="fill-height bg-light-blue-lighten-5" fluid>
     <v-row align="center" justify="center">
       <v-col cols="12" md="8" lg="6">
-        <v-card class="elevation-1 pa-8" outlined>
+        <v-card class="elevation-1 pa-8" border>
           <v-card-title>
-            <v-container class="text-center pt-4">
+            <v-container class="text-center">
               <v-avatar color="primary" size="120">
-                <v-icon size="100" dark>
-                  mdi-account
-                </v-icon>
+                <v-icon size="100"> mdi-account </v-icon>
               </v-avatar>
-              <div class="display-1 grey--text pb-8">
-                Welcome to Time-Booking Service!
-              </div>
+              <div class="text-grey pt-8">Welcome to Time-Booking Service!</div>
             </v-container>
           </v-card-title>
           <v-card-text class="px-0 pb-0">
@@ -35,7 +28,7 @@
                 append-icon="mdi-account"
                 type="text"
                 required
-                outlined
+                variant="outlined"
                 :rules="[() => !!username || 'This field is required']"
                 :placeholder="placeholder"
                 @keyup.enter="login"
@@ -50,7 +43,7 @@
                 append-icon="mdi-lock"
                 type="password"
                 required
-                outlined
+                variant="outlined"
                 :rules="[() => !!password || 'This field is required']"
                 :placeholder="placeholder"
                 @keyup.enter="login"
@@ -61,7 +54,7 @@
             <v-btn
               id="login-btn"
               block
-              x-large
+              size="x-large"
               color="primary"
               @click="login"
             >
@@ -76,7 +69,7 @@
 
 <script>
 export default {
-  name: "Login",
+  name: 'Login',
   data() {
     return {
       placeholder: null,
@@ -86,7 +79,7 @@ export default {
       error: false,
       errorMsg: null,
       valid: false
-    };
+    }
   },
 
   computed: {
@@ -97,39 +90,27 @@ export default {
 
   watch: {
     username() {
-      this.resetPlaceholder();
+      this.resetPlaceholder()
     },
     password() {
-      this.resetPlaceholder();
+      this.resetPlaceholder()
     }
   },
 
   created() {
     if (this.isAuthenticated) {
-      this.$router.replace({ name: "products" });
+      this.$router.replace({ name: 'products' })
     }
   },
 
   mounted() {
-    this.fixAutocomplete();
+    this.fixAutocomplete()
   },
 
   methods: {
     login() {
-      if (!this.valid) return;
-
-      this.$store
-        .dispatch(LOGIN, { username: this.username, password: this.password })
-        .then(() => {
-          this.success = true;
-          this.error = false;
-
-          const returnTo = this.$router.currentRoute.query["return_to"];
-          this.$router.replace(returnTo || { name: "products" });
-        }).catch(err => {
-        this.errorMsg = `Failed to log in! ${err.message}`;
-        this.error = true;
-      });
+      if (!this.valid) return
+      this.$router.push('/')
     },
 
     /**
@@ -138,24 +119,26 @@ export default {
      * See: https://github.com/vuetifyjs/vuetify/issues/3679
      */
     fixAutocomplete() {
-      let times = 0;
+      let times = 0
       const interval = setInterval(() => {
-        times += 1;
+        times += 1
         if (this.placeholder || times === 20) {
-          clearInterval(interval);
+          clearInterval(interval)
         }
 
-        const username =
-          this.$el.querySelector("input[name=\"username\"]:-webkit-autofill");
-        const password =
-          this.$el.querySelector("input[name=\"password\"]:-webkit-autofill");
+        const username = this.$el.querySelector(
+          'input[name="username"]:-webkit-autofill'
+        )
+        const password = this.$el.querySelector(
+          'input[name="password"]:-webkit-autofill'
+        )
 
         if (username || password) {
           this.$nextTick(() => {
-            this.placeholder = "`\u0020`";
-          });
+            this.placeholder = '`\u0020`'
+          })
         }
-      }, 100);
+      }, 100)
     },
 
     /**
@@ -164,8 +147,8 @@ export default {
      * See the fixAutocomplete function for more information.
      */
     resetPlaceholder() {
-      this.placeholder = null;
+      this.placeholder = null
     }
   }
-};
+}
 </script>

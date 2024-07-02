@@ -1,20 +1,16 @@
-/**
- * plugins/vuetify.ts
- *
- * Framework documentation: https://vuetifyjs.com`
- */
-
-// Styles
 import '@mdi/font/css/materialdesignicons.css'
 import 'vuetify/styles'
-
-// Composables
+import { ru } from 'vuetify/locale'
 import { createVuetify } from 'vuetify'
-import { VCalendar } from "vuetify/labs/VCalendar";
+import { VCalendar } from 'vuetify/labs/VCalendar'
 
-// https://vuetifyjs.com/en/introduction/why-vuetify/#feature-guides
 export default createVuetify({
   components: {
     VCalendar
+  },
+  locale: {
+    locale: 'ru-RU',
+    fallback: 'ru',
+    messages: { ru }
   }
 })

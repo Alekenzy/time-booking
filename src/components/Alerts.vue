@@ -2,11 +2,11 @@
   <span>
     <v-alert
       :model-value="success"
-      dismissible
+      closable
       color="success"
-      border="left"
+      border="start"
       elevation="2"
-      colored-border
+      border-color="primary"
       icon="mdi-check"
     >
       {{ successMsg }}
@@ -14,11 +14,11 @@
 
     <v-alert
       :model-value="error"
-      dismissible
+      closable
       color="error"
-      border="left"
+      border="start"
       elevation="2"
-      colored-border
+      border-color="primary"
       icon="mdi-alert-outline"
     >
       {{ errorMsg }}
@@ -28,12 +28,12 @@
 
 <script>
 export default {
-  name: "Alerts",
+  name: 'Alerts',
   props: {
     success: { type: Boolean, default: false },
     error: { type: Boolean, default: false },
     successMsg: { type: String, default: null },
     errorMsg: { type: String, default: null }
   }
-};
+}
 </script>

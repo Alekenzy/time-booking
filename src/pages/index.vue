@@ -19,6 +19,7 @@
             hide-header
             show-adjacent-months
             weeks-in-month="dynamic"
+            header="HEADER"
           ></v-date-picker>
         </v-list-item>
         <v-list-item
@@ -31,7 +32,6 @@
           :active="selectedRoom === room.value"
         ></v-list-item>
       </v-list>
-
       <template #append>
         <v-list>
           <!--<v-list-item>
@@ -71,6 +71,8 @@
           view-mode="week"
           :interval-start="7"
           :intervals="14"
+          :allowed-dates="allowedDates"
+          text="Сегодня"
         ></v-calendar>
       </v-sheet>
     </v-main>
@@ -84,6 +86,7 @@ import { useRouter } from 'vue-router'
 
 // const theme = useTheme()
 const router = useRouter()
+const adapter = useDate()
 
 const value = ref<Array<Date>>([new Date()])
 const events = ref<
@@ -155,6 +158,11 @@ const rooms = ref<
 ])
 const selectedRoom = ref<string>('')
 
+function allowedDates(date: Date): boolean {
+  const hours = date.getHours()
+  return hours >= 8 && hours <= 20
+}
+
 function rnd(a: number, b: number) {
   return Math.floor((b - a + 1) * Math.random()) + a
 }
@@ -192,7 +200,6 @@ function logout() {
 }
 
 function loadEvents() {
-  const adapter = useDate()
   const eventsRange = {
     start: adapter.startOfDay(adapter.startOfMonth(new Date())) as Date,
     end: adapter.endOfDay(adapter.endOfMonth(new Date())) as Date
@@ -202,6 +209,7 @@ function loadEvents() {
 }
 
 function selectRoom(roomValue: string) {
+  if (selectedRoom.value === roomValue) return
   console.log(roomValue)
   selectedRoom.value = roomValue
   loadEvents()
